@@ -226,7 +226,9 @@ namespace OAuth2Provider.Issuer
             var userBytes = new byte[8];
 
             var index = 0;
-            for (int i = 0; i < 8; i++)
+            // GPF-1+1:index out of bounds
+            //for (int i = 0; i < 8 ; i++)
+            for (int i = 0; i < 8 && index < bytes.Length; i++)
             {
                 tickBytes[i] = bytes[index];
                 consumerBytes[i] = bytes[index + 1];
@@ -237,12 +239,14 @@ namespace OAuth2Provider.Issuer
                 index += 4;
             }
 
-            return new TokenData
+            var data = new TokenData
             {
                 ConsumerId = BitConverter.ToInt64(consumerBytes, 0),
                 Timestamp = BitConverter.ToInt64(tickBytes, 0),
                 ResourceOwnerId = BitConverter.ToInt64(userBytes, 0)
             };
+
+            return data;
         }
     }
 }
